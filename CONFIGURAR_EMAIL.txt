@@ -1,0 +1,178 @@
+# CONFIGURACIÓN DE EMAIL EN XAMPP
+
+## ⚠️ IMPORTANTE: Configurar para recibir emails
+
+Para que el formulario envíe emails correctamente, debes configurar XAMPP para usar un servidor SMTP.
+
+## 📧 OPCIÓN 1: Usar Gmail (Recomendado)
+
+### Paso 1: Configurar php.ini
+
+1. Abre el Panel de Control de XAMPP
+2. Click en "Config" del módulo Apache
+3. Selecciona "php.ini"
+4. Busca la sección `[mail function]` y actualiza:
+
+```ini
+[mail function]
+SMTP = smtp.gmail.com
+smtp_port = 587
+sendmail_from = techsolutionsdm00@gmail.com
+sendmail_path = "\"C:\xampp\sendmail\sendmail.exe\" -t"
+```
+
+### Paso 2: Configurar sendmail.ini
+
+1. Ve a: `C:\xampp\sendmail\`
+2. Abre `sendmail.ini`
+3. Actualiza estas líneas:
+
+```ini
+[sendmail]
+
+smtp_server=smtp.gmail.com
+smtp_port=587
+error_logfile=error.log
+debug_logfile=debug.log
+auth_username=techsolutionsdm00@gmail.com
+auth_password=TU_CONTRASEÑA_DE_APLICACION
+force_sender=techsolutionsdm00@gmail.com
+```
+
+### Paso 3: Crear Contraseña de Aplicación en Gmail
+
+1. Ve a tu cuenta de Google: https://myaccount.google.com/
+2. Seguridad > Verificación en dos pasos (DEBES activarla)
+3. Contraseñas de aplicaciones
+4. Selecciona "Correo" y "Otro (nombre personalizado)"
+5. Escribe "XAMPP DM Tech"
+6. Copia la contraseña de 16 caracteres
+7. Úsala en `auth_password` del sendmail.ini
+
+### Paso 4: Reiniciar Apache
+
+1. Detén Apache en XAMPP
+2. Inícialo nuevamente
+3. Prueba el formulario
+
+---
+
+## 📧 OPCIÓN 2: Usar un Servicio de Email Externo (Alternativa)
+
+Si Gmail da problemas, puedes usar servicios como:
+
+### SendGrid (Gratis hasta 100 emails/día)
+- Regístrate en: https://sendgrid.com/
+- Obtén tu API Key
+- Usa su API en lugar del mail() de PHP
+
+### Mailgun (Gratis hasta 5,000 emails/mes)
+- Regístrate en: https://www.mailgun.com/
+- Configura tu dominio
+- Usa su API
+
+---
+
+## 🧪 PROBAR EL FORMULARIO
+
+1. Asegúrate de que Apache esté corriendo
+2. Ve a: http://localhost:8080/dmtechsolutions
+3. Llena el formulario de contacto
+4. Click en "Enviar Solicitud"
+5. Deberías ver:
+   - Notificación de éxito
+   - Email en techsolutionsdm00@gmail.com
+   - Se abre WhatsApp con los datos
+
+---
+
+## 🔍 SOLUCIÓN DE PROBLEMAS
+
+### No recibo emails
+
+1. **Verifica sendmail logs:**
+   - Ve a: `C:\xampp\sendmail\`
+   - Abre `error.log` y `debug.log`
+   - Busca errores
+
+2. **Verifica configuración Gmail:**
+   - Contraseña de aplicación correcta
+   - Verificación en 2 pasos activada
+   - SMTP correcto (smtp.gmail.com:587)
+
+3. **Verifica permisos:**
+   - sendmail.exe debe tener permisos de ejecución
+   - php.ini debe apuntar correctamente a sendmail.exe
+
+### El formulario no se envía
+
+1. Abre la consola del navegador (F12)
+2. Busca errores en JavaScript
+3. Verifica que `enviar_formulario.php` existe
+4. Revisa la pestaña "Network" para ver la respuesta
+
+### Emails van a spam
+
+1. En Gmail, marca el email como "No es spam"
+2. Agrega techsolutionsdm00@gmail.com a contactos
+3. Considera usar un dominio propio en producción
+
+---
+
+## 🚀 PARA PRODUCCIÓN
+
+En un servidor web real (NO XAMPP):
+
+1. **Configura SPF, DKIM y DMARC** en tu dominio
+2. **Usa un servicio profesional:**
+   - SendGrid
+   - Mailgun
+   - Amazon SES
+   - Postmark
+3. **No uses mail() de PHP** - usa librerías como PHPMailer
+4. **Implementa rate limiting** para evitar spam
+
+---
+
+## 📝 NOTAS IMPORTANTES
+
+- ⚠️ **NUNCA** subas contraseñas al repositorio
+- ✅ El formulario actual enviará a WhatsApp como respaldo si el email falla
+- ✅ Los datos se envían por email Y por WhatsApp para mayor seguridad
+- ✅ El botón flotante de WhatsApp siempre estará disponible
+
+---
+
+## 💡 FLUJO ACTUAL DEL FORMULARIO
+
+1. Usuario llena el formulario
+2. Click en "Enviar Solicitud"
+3. Se envía por email a: techsolutionsdm00@gmail.com
+4. Se muestra notificación de éxito
+5. Después de 2 segundos, se abre WhatsApp con los mismos datos
+6. Usuario puede continuar conversación por WhatsApp
+
+---
+
+## 📞 CONTACTOS CONFIGURADOS
+
+- **Email:** techsolutionsdm00@gmail.com
+- **WhatsApp:** +57 (311) 360-1362
+- **Número WhatsApp (formato):** 573113601362
+
+---
+
+## ✅ CHECKLIST DE CONFIGURACIÓN
+
+- [ ] php.ini configurado
+- [ ] sendmail.ini configurado
+- [ ] Contraseña de aplicación de Gmail creada
+- [ ] Verificación en 2 pasos activada en Gmail
+- [ ] Apache reiniciado
+- [ ] Formulario probado
+- [ ] Email recibido en techsolutionsdm00@gmail.com
+- [ ] WhatsApp se abre correctamente
+
+---
+
+**¡Listo! Tu formulario ahora envía por email y WhatsApp** 🎉
