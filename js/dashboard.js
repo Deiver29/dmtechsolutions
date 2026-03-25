@@ -642,17 +642,21 @@ function eliminarItemRow(e) {
 
 // Calcular totales de la cotización
 function calcularTotalesCotizacion() {
-    let subtotal = 0;
+    // Calcular Gran Total (precios CON IVA incluido)
+    let granTotal = 0;
     
     document.querySelectorAll('.item-row').forEach(row => {
         const cantidad = parseFloat(row.querySelector('.item-cantidad').value) || 0;
         const precio = parseFloat(row.querySelector('.item-precio').value) || 0;
-        subtotal += cantidad * precio;
+        granTotal += cantidad * precio;
     });
     
-    const iva = subtotal * 0.19;
-    const total = subtotal + iva;
+    // Extraer el IVA del Gran Total
+    const subtotal = granTotal / 1.19;  // Precio sin IVA
+    const iva = granTotal - subtotal;    // IVA extraído
+    const total = granTotal;             // Total = Gran Total
     
+    document.getElementById('cotGranTotal').textContent = formatMoney(granTotal);
     document.getElementById('cotSubtotal').textContent = formatMoney(subtotal);
     document.getElementById('cotIva').textContent = formatMoney(iva);
     document.getElementById('cotTotal').textContent = formatMoney(total);
@@ -693,16 +697,18 @@ async function guardarCotizacion() {
             });
         });
         
-        // Calcular totales
-        let subtotal = 0;
-        items.forEach(item => subtotal += item.subtotal);
-        const ivaTotal = subtotal * 0.19;
-        const total = subtotal + ivaTotal;
+        // Calcular totales (IVA incluido en precios)
+        let granTotal = 0;
+        items.forEach(item => granTotal += item.subtotal);
+        
+        const subtotal = granTotal / 1.19;        // Precio sin IVA
+        const ivaTotal = granTotal - subtotal;    // IVA extraído
+        const total = granTotal;                  // Total con IVA
         
         // Agregar datos calculados
-        formData.append('subtotal', subtotal);
-        formData.append('iva_monto', ivaTotal);
-        formData.append('total', total);
+        formData.append('subtotal', subtotal.toFixed(2));
+        formData.append('iva_monto', ivaTotal.toFixed(2));
+        formData.append('total', total.toFixed(2));
         
         // Agregar items al formData
         items.forEach((item, index) => {
@@ -837,7 +843,8 @@ function formatDate(dateString) {
 
 // Funciones placeholder para cotizaciones
 function verCotizacion(id) {
-    showNotification('Función de vista detallada en desarrollo', 'info');
+    // Abrir la cotización en una nueva ventana para imprimir
+    window.open(`ver_cotizacion.html?id=${id}`, '_blank', 'width=1000,height=800');
 }
 
 function editarCotizacion(id) {

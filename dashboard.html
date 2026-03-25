@@ -500,7 +500,7 @@
                                         <input type="number" class="item-cantidad" value="1" min="1" step="0.01" required>
                                     </div>
                                     <div class="form-group" style="flex: 1;">
-                                        <label>Precio Unitario *</label>
+                                        <label>Precio Unitario * <small style="color: #64748b;">(con IVA incluido)</small></label>
                                         <input type="number" class="item-precio" placeholder="0.00" min="0" step="0.01" required>
                                     </div>
                                     <div class="form-group" style="flex: 1;">
@@ -523,9 +523,14 @@
 
                     <div class="form-section">
                         <h4>Totales</h4>
+                        <p style="font-size: 12px; color: #64748b; margin: 8px 0;">Los precios incluyen IVA del 19%</p>
                         <div class="totales-container">
                             <div class="total-row">
-                                <span>Subtotal:</span>
+                                <span>Gran Total:</span>
+                                <strong id="cotGranTotal">$0.00</strong>
+                            </div>
+                            <div class="total-row">
+                                <span>Subtotal (sin IVA):</span>
                                 <strong id="cotSubtotal">$0.00</strong>
                             </div>
                             <div class="total-row">
@@ -533,7 +538,7 @@
                                 <strong id="cotIva">$0.00</strong>
                             </div>
                             <div class="total-row total-final">
-                                <span>Total:</span>
+                                <span>Valor Total:</span>
                                 <strong id="cotTotal">$0.00</strong>
                             </div>
                         </div>

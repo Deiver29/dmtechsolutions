@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotización - DM Tech Solutions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .logo {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .company-info {
+            text-align: right;
+        }
+
+        .company-info h1 {
+            color: #1e293b;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .company-info p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .cotizacion-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .info-section h3 {
+            color: #1e293b;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-section p {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.8;
+            margin: 5px 0;
+        }
+
+        .info-section strong {
+            color: #1e293b;
+            display: inline-block;
+            width: 120px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+
+        .items-table thead {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .items-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .items-table th:last-child,
+        .items-table td:last-child {
+            text-align: right;
+        }
+
+        .items-table tbody tr {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .items-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .items-table td {
+            padding: 15px 12px;
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .items-table td:first-child {
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .totals {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .totals-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            width: 350px;
+            padding: 8px 0;
+            font-size: 15px;
+        }
+
+        .total-row span:first-child {
+            color: #64748b;
+        }
+
+        .total-row strong {
+            color: #1e293b;
+        }
+
+        .total-final {
+            border-top: 2px solid #3b82f6;
+            padding-top: 15px;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .total-final span:first-child {
+            color: #3b82f6;
+        }
+
+        .total-final strong {
+            color: #3b82f6;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .actions {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-print {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-back {
+            background-color: #64748b;
+            color: white;
+        }
+
+        .btn-back:hover {
+            background-color: #475569;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-borrador {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-enviada {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-aceptada {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+
+            .actions {
+                display: none;
+            }
+
+            .items-table thead {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="actions">
+        <button class="btn btn-print" onclick="window.print()">
+            <i class="fas fa-print"></i> Imprimir
+        </button>
+        <button class="btn btn-back" onclick="window.close()">
+            <i class="fas fa-times"></i> Cerrar
+        </button>
+    </div>
+
+    <div class="container" id="cotizacion-content">
+        <div class="header">
+            <img src="../../images/logo.jpeg" alt="DM Tech Solutions" class="logo">
+            <div class="company-info">
+                <h1>DM TECH SOLUTIONS</h1>
+                <p>Dirección: Cra 10 # 73D-05</p>
+                <p>Teléfono: 3014047763</p>
+                <p>techsolutionsdm00@gmail.com</p>
+            </div>
+        </div>
+
+        <div class="cotizacion-info">
+            <div class="info-section">
+                <h3>Cliente</h3>
+                <p id="cliente-nombre">-</p>
+                <p id="cliente-empresa">-</p>
+                <p id="cliente-telefono">-</p>
+                <p id="cliente-direccion">-</p>
+            </div>
+            <div class="info-section">
+                <h3>Información de Cotización</h3>
+                <p><strong>Número:</strong> <span id="cot-numero">-</span></p>
+                <p><strong>Fecha:</strong> <span id="cot-fecha">-</span></p>
+                <p><strong>Válida hasta:</strong> <span id="cot-vencimiento">-</span></p>
+                <p><strong>Estado:</strong> <span id="cot-estado">-</span></p>
+            </div>
+        </div>
+
+        <h3 style="color: #1e293b; margin-bottom: 15px;">Concepto: <span id="cot-titulo">-</span></h3>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item / Descripción</th>
+                    <th style="text-align: center;">Cantidad</th>
+                    <th style="text-align: right;">Vr. Unitario</th>
+                    <th style="text-align: right;">Vr. Total</th>
+                </tr>
+            </thead>
+            <tbody id="items-tbody">
+                <!-- Items se cargarán aquí -->
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <p style="color: #64748b; font-size: 12px; text-align: right; margin-bottom: 10px;">
+                Los precios incluyen IVA del 19%
+            </p>
+            <div class="totals-grid">
+                <div class="total-row">
+                    <span>Gran Total:</span>
+                    <strong id="total-gran">$0.00</strong>
+                </div>
+                <div class="total-row">
+                    <span>Subtotal (sin IVA):</span>
+                    <strong id="total-subtotal">$0.00</strong>
+                </div>
+                <div class="total-row">
+                    <span>IVA (19%):</span>
+                    <strong id="total-iva">$0.00</strong>
+                </div>
+                <div class="total-row total-final">
+                    <span>VALOR TOTAL:</span>
+                    <strong id="total-final">$0.00</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Esta cotización es válida por <span id="validez-dias">30</span> días a partir de la fecha de emisión.</p>
+            <p>DM Tech Solutions - Todos los derechos reservados © <span id="current-year"></span></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Obtener ID de la cotización de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const cotizacionId = urlParams.get('id');
+
+        if (!cotizacionId) {
+            alert('ID de cotización no proporcionado');
+            window.close();
+        }
+
+        // Cargar datos de la cotización
+        async function cargarCotizacion() {
+            try {
+                const response = await fetch(`modules/cotizaciones/obtener_cotizacion.php?id=${cotizacionId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const cot = data.data;
+
+                    // Información del cliente
+                    document.getElementById('cliente-nombre').textContent = cot.cliente_nombre_actual || cot.cliente_nombre;
+                    if (cot.cliente_empresa) {
+                        document.getElementById('cliente-empresa').textContent = cot.cliente_empresa;
+                    }
+                    document.getElementById('cliente-telefono').textContent = `Tel: ${cot.cliente_telefono_actual || cot.cliente_telefono || '-'}`;
+                    if (cot.cliente_direccion_actual || cot.cliente_direccion) {
+                        document.getElementById('cliente-direccion').textContent = cot.cliente_direccion_actual || cot.cliente_direccion;
+                    }
+
+                    // Información de cotización
+                    document.getElementById('cot-numero').textContent = cot.numero_cotizacion;
+                    document.getElementById('cot-fecha').textContent = formatDate(cot.fecha_emision);
+                    document.getElementById('cot-vencimiento').textContent = formatDate(cot.fecha_vencimiento);
+                    document.getElementById('cot-titulo').textContent = cot.titulo;
+                    document.getElementById('validez-dias').textContent = cot.validez_dias || 30;
+
+                    // Estado
+                    const estadoBadge = getEstadoBadge(cot.estado);
+                    document.getElementById('cot-estado').innerHTML = estadoBadge;
+
+                    // Items
+                    const tbody = document.getElementById('items-tbody');
+                    tbody.innerHTML = '';
+                    cot.items.forEach((item, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${item.nombre}</strong>${item.descripcion ? '<br><small style="color: #94a3b8;">' + item.descripcion + '</small>' : ''}</td>
+                            <td style="text-align: center;">${item.cantidad}</td>
+                            <td style="text-align: right;">${formatMoney(item.precio_unitario)}</td>
+                            <td style="text-align: right;"><strong>${formatMoney(item.subtotal)}</strong></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Totales
+                    const granTotal = parseFloat(cot.total);
+                    const subtotal = granTotal / 1.19;
+                    const iva = granTotal - subtotal;
+
+                    document.getElementById('total-gran').textContent = formatMoney(granTotal);
+                    document.getElementById('total-subtotal').textContent = formatMoney(subtotal);
+                    document.getElementById('total-iva').textContent = formatMoney(iva);
+                    document.getElementById('total-final').textContent = formatMoney(granTotal);
+
+                } else {
+                    alert('Error: ' + data.message);
+                    window.close();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar la cotización');
+                window.close();
+            }
+        }
+
+        function formatMoney(value) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            return date.toLocaleDateString('es-CO', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function getEstadoBadge(estado) {
+            const badges = {
+                'borrador': '<span class="status-badge status-borrador">Borrador</span>',
+                'enviada': '<span class="status-badge status-enviada">Enviada</span>',
+                'aceptada': '<span class="status-badge status-aceptada">Aceptada</span>'
+            };
+            return badges[estado] || `<span class="status-badge">${estado}</span>`;
+        }
+
+        // Cargar cotización al iniciar
+        cargarCotizacion();
+    </script>
+</body>
+</html>
