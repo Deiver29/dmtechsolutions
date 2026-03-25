@@ -2,11 +2,8 @@
 // Iniciar sesión
 session_start();
 
-// Configuración de la base de datos
-$host = 'localhost';
-$dbname = 'dmtech';
-$username = 'root';
-$password = '';
+// Incluir configuración de base de datos
+require_once '../../config/db_config.php';
 
 // Headers para respuesta JSON
 header('Content-Type: application/json');
@@ -20,8 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 try {
     // Conexión a la base de datos
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = getPDOConnection();
     
     // Obtener datos del formulario
     $correo = filter_input(INPUT_POST, 'correo', FILTER_SANITIZE_EMAIL);

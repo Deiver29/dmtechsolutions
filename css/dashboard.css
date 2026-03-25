@@ -803,8 +803,122 @@ body {
 }
 
 /* ========================================
-   RESPONSIVE
+   MODAL GRANDE (Para cotizaciones)
    ======================================== */
+.modal-lg {
+    max-width: 900px;
+}
+
+/* ========================================
+   FORMULARIO DE COTIZACIÓN
+   ======================================== */
+.form-section {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #E0E7F1;
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+}
+
+.form-section h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.item-row {
+    background: var(--bg-light);
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #E0E7F1;
+}
+
+.btn-remove-item {
+    background: transparent;
+    border: 1px solid #E0E7F1;
+    color: var(--error);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+}
+
+.btn-remove-item:hover {
+    background: var(--error);
+    color: white;
+    border-color: var(--error);
+}
+
+.totales-container {
+    background: var(--bg-light);
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.total-row.total-final {
+    font-size: 18px;
+    font-weight: 700;
+    padding-top: 12px;
+    border-top: 2px solid #CBD5E1;
+    margin-top: 4px;
+    color: var(--primary-color);
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.badge-warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.badge-info {
+    background-color: rgba(0, 102, 255, 0.1);
+    color: var(--primary-color);
+}
+
+.badge-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+}
+
+.badge-secondary {
+    background-color: rgba(148, 163, 184, 0.1);
+    color: var(--text-secondary);
+}
+
+/* ========================================
+   RESPONSIVE
+   ========================================== */
 @media (max-width: 1024px) {
     .sidebar {
         transform: translateX(-100%);

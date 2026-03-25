@@ -644,7 +644,7 @@ if (loginForm) {
             formData.append('password', password);
             
             // Enviar petición al servidor
-            const response = await fetch('login.php', {
+            const response = await fetch('modules/auth/login.php', {
                 method: 'POST',
                 body: formData
             });

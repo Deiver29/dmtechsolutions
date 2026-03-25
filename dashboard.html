@@ -53,7 +53,7 @@
         </nav>
 
         <div class="sidebar-footer">
-            <a href="logout.php" class="logout-btn">
+            <a href="modules/auth/logout.php" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Cerrar Sesión</span>
             </a>
@@ -226,9 +226,9 @@
                                     <th>ID</th>
                                     <th>Nombre</th>
                                     <th>Empresa</th>
-                                    <th>Email</th>
+                                    <th>Tipo</th>
                                     <th>Teléfono</th>
-                                    <th>Estado</th>
+                                    <th>Ciudad</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -258,15 +258,43 @@
                 </div>
 
                 <div class="data-card">
-                    <div class="card-body">
-                        <div class="empty-state">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <h3>No hay cotizaciones</h3>
-                            <p>Crea tu primera cotización para tus clientes</p>
-                            <button class="btn btn-primary" onclick="document.getElementById('btnNuevaCotizacion').click()">
-                                Crear Cotización
-                            </button>
+                    <div class="card-header">
+                        <div class="search-filter">
+                            <input type="text" placeholder="Buscar cotizaciones..." id="searchCotizaciones">
+                            <select id="filterCotizaciones">
+                                <option value="todos">Todos los estados</option>
+                                <option value="borrador">Borradores</option>
+                                <option value="enviada">Enviadas</option>
+                                <option value="aceptada">Aceptadas</option>
+                                <option value="rechazada">Rechazadas</option>
+                            </select>
                         </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Cliente</th>
+                                    <th>Título</th>
+                                    <th>Fecha Emisión</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cotizacionesTableBody">
+                                <tr>
+                                    <td colspan="7" class="empty-state">
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                        <p>No hay cotizaciones registradas</p>
+                                        <button class="btn btn-primary" onclick="document.getElementById('btnNuevaCotizacion').click()">
+                                            Crear Primera Cotización
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
@@ -374,26 +402,35 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label><i class="fas fa-user"></i> Nombre *</label>
-                            <input type="text" name="nombre" required>
+                            <input type="text" name="nombre" id="clienteNombre" required placeholder="Nombre del cliente">
                         </div>
                         <div class="form-group">
-                            <label><i class="fas fa-building"></i> Empresa</label>
-                            <input type="text" name="empresa">
+                            <label><i class="fas fa-phone"></i> Teléfono *</label>
+                            <input type="tel" name="telefono" id="clienteTelefono" required placeholder="300 123 4567">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label><i class="fas fa-envelope"></i> Email *</label>
-                            <input type="email" name="email" required>
+                            <label><i class="fas fa-building"></i> Empresa</label>
+                            <input type="text" name="empresa" id="clienteEmpresa" placeholder="Nombre de la empresa (opcional)">
                         </div>
                         <div class="form-group">
-                            <label><i class="fas fa-phone"></i> Teléfono *</label>
-                            <input type="tel" name="telefono" required>
+                            <label><i class="fas fa-user-tag"></i> Tipo de Cliente</label>
+                            <select name="tipo_cliente" id="clienteTipo">
+                                <option value="persona">Persona</option>
+                                <option value="empresa">Empresa</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-map-marker-alt"></i> Dirección</label>
-                        <input type="text" name="direccion">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Dirección</label>
+                            <input type="text" name="direccion" id="clienteDireccion" placeholder="Calle, carrera, avenida...">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-city"></i> Ciudad</label>
+                            <input type="text" name="ciudad" id="clienteCiudad" placeholder="Bogotá, Medellín, Cali...">
+                        </div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary" onclick="closeModal('modalCliente')">
@@ -401,6 +438,113 @@
                         </button>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Guardar Cliente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Cotización -->
+    <div id="modalCotizacion" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-invoice-dollar"></i> Nueva Cotización</h3>
+                <button class="close-modal" onclick="closeModal('modalCotizacion')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formCotizacion">
+                    <div class="form-section">
+                        <h4>Información General</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-hashtag"></i> Número de Cotización</label>
+                                <input type="text" name="numero_cotizacion" id="cotNumero" readonly style="background-color: #f1f5f9;">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-heading"></i> Título *</label>
+                                <input type="text" name="titulo" id="cotTitulo" required placeholder="Ej: Desarrollo Web Corporativo">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> Cliente *</label>
+                                <select name="cliente_id" id="cotCliente" required>
+                                    <option value="">Seleccione un cliente</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-calendar"></i> Fecha de Emisión *</label>
+                                <input type="date" name="fecha_emision" id="cotFechaEmision" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-align-left"></i> Descripción</label>
+                            <textarea name="descripcion" id="cotDescripcion" rows="3" placeholder="Descripción breve de la cotización"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Items / Servicios</h4>
+                        <div id="itemsContainer">
+                            <div class="item-row">
+                                <div class="form-row">
+                                    <div class="form-group" style="flex: 2;">
+                                        <label>Descripción *</label>
+                                        <input type="text" class="item-nombre" placeholder="Ej: Diseño de sitio web" required>
+                                    </div>
+                                    <div class="form-group" style="flex: 1;">
+                                        <label>Cantidad *</label>
+                                        <input type="number" class="item-cantidad" value="1" min="1" step="0.01" required>
+                                    </div>
+                                    <div class="form-group" style="flex: 1;">
+                                        <label>Precio Unitario *</label>
+                                        <input type="number" class="item-precio" placeholder="0.00" min="0" step="0.01" required>
+                                    </div>
+                                    <div class="form-group" style="flex: 1;">
+                                        <label>Subtotal</label>
+                                        <input type="text" class="item-subtotal" readonly style="background-color: #f1f5f9;">
+                                    </div>
+                                    <div class="form-group" style="flex: 0 0 50px;">
+                                        <label>&nbsp;</label>
+                                        <button type="button" class="btn-icon btn-remove-item" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" id="btnAgregarItem">
+                            <i class="fas fa-plus"></i> Agregar Item
+                        </button>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Totales</h4>
+                        <div class="totales-container">
+                            <div class="total-row">
+                                <span>Subtotal:</span>
+                                <strong id="cotSubtotal">$0.00</strong>
+                            </div>
+                            <div class="total-row">
+                                <span>IVA (19%):</span>
+                                <strong id="cotIva">$0.00</strong>
+                            </div>
+                            <div class="total-row total-final">
+                                <span>Total:</span>
+                                <strong id="cotTotal">$0.00</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('modalCotizacion')">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Crear Cotización
                         </button>
                     </div>
                 </form>
