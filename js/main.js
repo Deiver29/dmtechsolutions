@@ -20,7 +20,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Header scroll effect
+// Header scroll effect - Mejorado
 let lastScroll = 0;
 const header = document.querySelector('.header');
 
@@ -28,11 +28,13 @@ window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
     
     if (currentScroll > 100) {
-        header.style.boxShadow = '0 4px 20px rgba(10, 25, 41, 0.15)';
+        header.style.boxShadow = '0 4px 20px rgba(10, 25, 41, 0.12)';
         header.style.padding = '12px 0';
+        header.style.backgroundColor = 'rgba(255, 255, 255, 0.96)';
     } else {
-        header.style.boxShadow = '0 2px 8px rgba(10, 25, 41, 0.08)';
+        header.style.boxShadow = '0 1px 0 rgba(0, 0, 0, 0.05)';
         header.style.padding = '16px 0';
+        header.style.backgroundColor = 'rgba(255, 255, 255, 0.92)';
     }
     
     lastScroll = currentScroll;
@@ -400,7 +402,7 @@ window.addEventListener('load', () => {
     }, 100);
 });
 
-// Service card hover effect with tilt
+// Service card hover effect with tilt - Mejorado
 document.querySelectorAll('.service-card').forEach(card => {
     card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
@@ -410,10 +412,10 @@ document.querySelectorAll('.service-card').forEach(card => {
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
         
-        const rotateX = (y - centerY) / 20;
-        const rotateY = (centerX - x) / 20;
+        const rotateX = (y - centerY) / 30;
+        const rotateY = (centerX - x) / 30;
         
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
     });
     
     card.addEventListener('mouseleave', () => {
@@ -421,21 +423,119 @@ document.querySelectorAll('.service-card').forEach(card => {
     });
 });
 
-// Cursor effect for interactive elements
-document.querySelectorAll('a, button, .btn').forEach(element => {
-    element.addEventListener('mouseenter', () => {
-        document.body.style.cursor = 'pointer';
-    });
+// Parallax effect para hero
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const heroContent = document.querySelector('.hero-content');
     
-    element.addEventListener('mouseleave', () => {
-        document.body.style.cursor = 'default';
+    if (heroContent && scrolled < window.innerHeight) {
+        heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
+        heroContent.style.opacity = 1 - (scrolled / window.innerHeight) * 0.5;
+    }
+});
+
+// Efecto de typing en el hero title (sutil)
+document.addEventListener('DOMContentLoaded', () => {
+    const heroTitle = document.querySelector('.hero-main');
+    if (heroTitle) {
+        heroTitle.style.opacity = '0';
+        setTimeout(() => {
+            heroTitle.style.transition = 'opacity 1.2s ease-out';
+            heroTitle.style.opacity = '1';
+        }, 300);
+    }
+});
+
+// Ripple effect en botones
+document.querySelectorAll('.btn').forEach(button => {
+    button.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.classList.add('ripple-effect');
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => ripple.remove(), 600);
     });
 });
 
-// Console branding
+// Lazy loading mejorado para imágenes
+if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.classList.add('loaded');
+                    observer.unobserve(img);
+                }
+            }
+        });
+    });
+    
+    document.querySelectorAll('img[data-src]').forEach(img => {
+        imageObserver.observe(img);
+    });
+}
+
+// Smooth reveal para secciones
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+        }
+    });
+}, {
+    threshold: 0.15,
+    rootMargin: '0px 0px -100px 0px'
+});
+
+document.querySelectorAll('section').forEach(section => {
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(30px)';
+    section.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+    revealObserver.observe(section);
+});
+
+// Agregar clase revealed cuando sea visible
+const style = document.createElement('style');
+style.textContent = `
+    section.revealed {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+    
+    .ripple-effect {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        transform: scale(0);
+        animation: ripple-animation 0.6s ease-out;
+        pointer-events: none;
+    }
+    
+    @keyframes ripple-animation {
+        to {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Console branding - Actualizado
 console.log('%c🖥️ DM TECH SOLUTIONS', 'font-size: 24px; font-weight: bold; color: #0066FF;');
-console.log('%cTecnología Empresarial de Vanguardia', 'font-size: 14px; color: #00C9A7;');
-console.log('%cVersión: 2.0.0 Enterprise', 'font-size: 12px; color: #5A6C7D;');
-console.log('%cFecha: 27 de diciembre de 2025', 'font-size: 12px; color: #5A6C7D;');
+console.log('%cTecnología Empresarial de Vanguardia', 'font-size: 14px; color: #00D4B8;');
+console.log('%cVersión: 2.5.0 Enterprise Edition', 'font-size: 12px; color: #5D6F80;');
+console.log('%cFecha: 31 de diciembre de 2025', 'font-size: 12px; color: #5D6F80;');
 console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #0066FF;');
+console.log('%cOptimizado para performance y experiencia de usuario', 'font-size: 11px; color: #8E9FB0;');
 console.log('%c¿Buscas talento técnico? Contáctanos!', 'font-size: 14px; font-weight: bold; color: #00C9A7;');
