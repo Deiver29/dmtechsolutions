@@ -147,7 +147,7 @@ function initModals() {
     const btnNuevoCliente = document.getElementById('btnNuevoCliente');
     if (btnNuevoCliente) {
         btnNuevoCliente.addEventListener('click', () => {
-            openModal('modalCliente');
+            abrirModalNuevoCliente();
         });
     }
     
@@ -261,8 +261,15 @@ function initForms() {
 // Guardar cliente
 async function guardarCliente(formData) {
     try {
-        // Crear nuevo cliente
-        const response = await fetch('modules/clientes/guardar_cliente.php', {
+        // Verificar si es actualización o creación
+        const clienteId = formData.get('id');
+        const isUpdate = clienteId && clienteId !== '';
+        
+        const endpoint = isUpdate ? 
+            'modules/clientes/actualizar_cliente.php' : 
+            'modules/clientes/guardar_cliente.php';
+        
+        const response = await fetch(endpoint, {
             method: 'POST',
             body: formData
         });
@@ -270,7 +277,7 @@ async function guardarCliente(formData) {
         const data = await response.json();
         
         if (data.success) {
-            showNotification('Cliente guardado correctamente', 'success');
+            showNotification(isUpdate ? 'Cliente actualizado correctamente' : 'Cliente guardado correctamente', 'success');
             closeModal('modalCliente');
             
             // Recargar la lista de clientes
@@ -362,10 +369,31 @@ async function cargarClientes() {
     }
 }
 
+// Abrir modal para nuevo cliente (modo crear)
+function abrirModalNuevoCliente() {
+    // Limpiar formulario
+    document.getElementById('formCliente').reset();
+    
+    // Eliminar el campo ID si existe
+    const inputId = document.getElementById('clienteId');
+    if (inputId) {
+        inputId.remove();
+    }
+    
+    // Restaurar título y botón del modal
+    const modalTitle = document.querySelector('#modalCliente h3');
+    if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Nuevo Cliente';
+    
+    const submitBtn = document.querySelector('#modalCliente .btn-primary');
+    if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-save"></i> Guardar Cliente';
+    
+    openModal('modalCliente');
+}
+
 // Editar cliente
 async function editarCliente(id) {
     try {
-        const response = await fetch(`clientes_api.php?action=get&id=${id}`);
+        const response = await fetch(`modules/clientes/obtener_cliente.php?id=${id}`);
         const data = await response.json();
         
         if (data.success) {
@@ -374,9 +402,10 @@ async function editarCliente(id) {
             // Llenar el formulario con los datos del cliente
             document.getElementById('clienteNombre').value = cliente.nombre || '';
             document.getElementById('clienteEmpresa').value = cliente.empresa || '';
-            document.getElementById('clienteEmail').value = cliente.email || '';
+            document.getElementById('clienteTipo').value = cliente.tipo_cliente || 'persona';
             document.getElementById('clienteTelefono').value = cliente.telefono || '';
             document.getElementById('clienteDireccion').value = cliente.direccion || '';
+            document.getElementById('clienteCiudad').value = cliente.ciudad || '';
             
             // Agregar campo oculto con el ID para actualización
             let inputId = document.getElementById('clienteId');
@@ -389,9 +418,12 @@ async function editarCliente(id) {
             }
             inputId.value = id;
             
-            // Cambiar el texto del botón
+            // Cambiar el título y botón del modal
+            const modalTitle = document.querySelector('#modalCliente h3');
+            if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Editar Cliente';
+            
             const submitBtn = document.querySelector('#modalCliente .btn-primary');
-            if (submitBtn) submitBtn.textContent = 'Actualizar Cliente';
+            if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar Cliente';
             
             openModal('modalCliente');
         }
@@ -409,12 +441,12 @@ async function eliminarCliente(id) {
     }
     
     try {
-        const response = await fetch('clientes_api.php', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `id=${id}`
+        const formData = new FormData();
+        formData.append('id', id);
+        
+        const response = await fetch('modules/clientes/eliminar_cliente.php', {
+            method: 'POST',
+            body: formData
         });
         
         const data = await response.json();
@@ -445,8 +477,8 @@ function loadDashboardData() {
 async function cargarEstadisticas() {
     try {
         const [clientesRes, cotizacionesRes] = await Promise.all([
-            fetch('clientes_api.php?action=list'),
-            fetch('cotizaciones_api.php?action=list').catch(() => ({json: () => ({success: false, data: []})}))
+            fetch('modules/clientes/listar_clientes.php'),
+            fetch('modules/cotizaciones/listar_cotizaciones.php').catch(() => ({json: () => ({success: false, data: []})}))
         ]);
         
         const clientesData = await clientesRes.json();
@@ -704,7 +736,7 @@ async function guardarCotizacion() {
 // Cargar lista de cotizaciones desde la API
 async function cargarCotizaciones() {
     try {
-        const response = await fetch('cotizaciones_api.php?action=list');
+        const response = await fetch('modules/cotizaciones/listar_cotizaciones.php');
         const data = await response.json();
         
         if (data.success) {
@@ -818,12 +850,12 @@ async function eliminarCotizacion(id) {
     }
     
     try {
-        const response = await fetch('cotizaciones_api.php', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `id=${id}`
+        const formData = new FormData();
+        formData.append('id', id);
+        
+        const response = await fetch('modules/cotizaciones/eliminar_cotizacion.php', {
+            method: 'POST',
+            body: formData
         });
         
         const data = await response.json();

@@ -19,18 +19,27 @@ try {
     exit;
 }
 
-// Listar clientes
-$sql = "SELECT id, nombre, empresa, tipo_cliente, telefono, direccion, ciudad, created_at 
-        FROM clientes 
-        ORDER BY created_at DESC";
+// Listar cotizaciones
+$sql = "SELECT 
+            c.id, 
+            c.numero_cotizacion, 
+            c.titulo,
+            c.cliente_nombre,
+            c.fecha_emision,
+            c.fecha_vencimiento,
+            c.total,
+            c.estado,
+            c.created_at
+        FROM cotizaciones c
+        ORDER BY c.created_at DESC";
 $result = $conn->query($sql);
 
-$clientes = [];
+$cotizaciones = [];
 while ($row = $result->fetch_assoc()) {
-    $clientes[] = $row;
+    $cotizaciones[] = $row;
 }
 
-echo json_encode(['success' => true, 'data' => $clientes, 'total' => count($clientes)]);
+echo json_encode(['success' => true, 'data' => $cotizaciones, 'total' => count($cotizaciones)]);
 
 $conn->close();
 ?>
