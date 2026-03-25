@@ -195,22 +195,35 @@ function closeModal(modalId) {
             const idField = form.querySelector('#clienteId');
             if (idField) idField.remove();
             
+            const cotizacionIdField = form.querySelector('#cotizacionId');
+            if (cotizacionIdField) cotizacionIdField.remove();
+            
             // Resetear texto del botón
             const submitBtn = modal.querySelector('.btn-primary');
             if (submitBtn && modalId === 'modalCliente') {
                 submitBtn.textContent = 'Guardar Cliente';
             }
             
-            // Limpiar items de cotización
+            // Limpiar items de cotización y resetear modal
             if (modalId === 'modalCotizacion') {
                 const itemsContainer = document.getElementById('itemsContainer');
                 if (itemsContainer) {
                     itemsContainer.innerHTML = '';
                 }
                 // Resetear totales
+                document.getElementById('cotGranTotal').textContent = '$0.00';
                 document.getElementById('cotSubtotal').textContent = '$0.00';
                 document.getElementById('cotIva').textContent = '$0.00';
                 document.getElementById('cotTotal').textContent = '$0.00';
+                
+                // Resetear título del modal
+                document.querySelector('#modalCotizacion .modal-header h3').innerHTML = 
+                    '<i class="fas fa-file-invoice-dollar"></i> Nueva Cotización';
+                
+                // Resetear botón
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<i class="fas fa-save"></i> Crear Cotización';
+                }
             }
         }
     }
@@ -223,6 +236,7 @@ window.showSection = showSection;
 window.editarCliente = editarCliente;
 window.eliminarCliente = eliminarCliente;
 window.verCotizacion = verCotizacion;
+window.editarCotizacion = editarCotizacion;
 window.editarCotizacion = editarCotizacion;
 window.eliminarCotizacion = eliminarCotizacion;
 
@@ -524,9 +538,9 @@ function actualizarContadorClientes() {
 // ========================================
 
 // Abrir modal de cotización
-async function abrirModalCotizacion() {
+// Cargar clientes en el select (funci\u00f3n reutilizable)
+async function cargarClientesEnSelect() {
     try {
-        // Cargar clientes en el select
         const response = await fetch('modules/clientes/listar_clientes.php');
         const data = await response.json();
         
@@ -541,6 +555,27 @@ async function abrirModalCotizacion() {
                 selectCliente.appendChild(option);
             });
         }
+    } catch (error) {
+        console.error('Error al cargar clientes:', error);
+        throw error;
+    }
+}
+
+async function abrirModalCotizacion() {
+    try {
+        // Resetear modal a modo creaci\u00f3n
+        document.querySelector('#modalCotizacion .modal-header h3').innerHTML = 
+            '<i class=\"fas fa-file-invoice-dollar\"></i> Nueva Cotizaci\u00f3n';
+        
+        document.querySelector('#modalCotizacion .btn-primary').innerHTML = 
+            '<i class=\"fas fa-save\"></i> Crear Cotizaci\u00f3n';
+        
+        // Eliminar campo ID si existe
+        const idField = document.getElementById('cotizacionId');
+        if (idField) idField.remove();
+        
+        // Cargar clientes en el select
+        await cargarClientesEnSelect();
         
         // Generar número temporal de cotización
         const year = new Date().getFullYear();
@@ -676,7 +711,12 @@ function formatMoney(value) {
 async function guardarCotizacion() {
     try {
         // Obtener datos del formulario
-        const formData = new FormData(document.getElementById('formCotizacion'));
+        const form = document.getElementById('formCotizacion');
+        const formData = new FormData(form);
+        
+        // Verificar si es edición o creación
+        const cotizacionId = form.querySelector('#cotizacionId')?.value;
+        const isEdit = cotizacionId && cotizacionId !== '';
         
         // Obtener items
         const items = [];
@@ -717,7 +757,12 @@ async function guardarCotizacion() {
             formData.append(`items[${index}][precio]`, item.precio_unitario);
         });
         
-        const response = await fetch('modules/cotizaciones/guardar_cotizacion.php', {
+        // Determinar endpoint según sea creación o edición
+        const endpoint = isEdit 
+            ? 'modules/cotizaciones/actualizar_cotizacion.php'
+            : 'modules/cotizaciones/guardar_cotizacion.php';
+        
+        const response = await fetch(endpoint, {
             method: 'POST',
             body: formData
         });
@@ -725,12 +770,13 @@ async function guardarCotizacion() {
         const data = await response.json();
         
         if (data.success) {
-            showNotification('Cotización creada exitosamente', 'success');
+            const mensaje = isEdit ? 'Cotización actualizada exitosamente' : 'Cotización creada exitosamente';
+            showNotification(mensaje, 'success');
             closeModal('modalCotizacion');
             cargarCotizaciones();
             cargarEstadisticas();
         } else {
-            showNotification(data.message || 'Error al crear cotización', 'error');
+            showNotification(data.message || 'Error al guardar cotización', 'error');
         }
         
     } catch (error) {
@@ -847,8 +893,75 @@ function verCotizacion(id) {
     window.open(`ver_cotizacion.html?id=${id}`, '_blank', 'width=1000,height=800');
 }
 
-function editarCotizacion(id) {
-    showNotification('Función de edición en desarrollo', 'info');
+async function editarCotizacion(id) {
+    try {
+        // Obtener datos de la cotización
+        const response = await fetch(`modules/cotizaciones/obtener_cotizacion.php?id=${id}`);
+        const data = await response.json();
+        
+        if (!data.success) {
+            showNotification(data.message || 'Error al cargar cotización', 'error');
+            return;
+        }
+        
+        const cotizacion = data.data;
+        
+        // Cargar clientes en el select
+        await cargarClientesEnSelect();
+        
+        // Cambiar título del modal
+        document.querySelector('#modalCotizacion .modal-header h3').innerHTML = 
+            '<i class="fas fa-edit"></i> Editar Cotización';
+        
+        // Cambiar texto del botón
+        document.querySelector('#modalCotizacion .btn-primary').innerHTML = 
+            '<i class="fas fa-save"></i> Actualizar Cotización';
+        
+        // Agregar campo oculto con el ID de la cotización
+        let idField = document.getElementById('cotizacionId');
+        if (!idField) {
+            idField = document.createElement('input');
+            idField.type = 'hidden';
+            idField.id = 'cotizacionId';
+            idField.name = 'id';
+            document.getElementById('formCotizacion').appendChild(idField);
+        }
+        idField.value = cotizacion.id;
+        
+        // Llenar campos del formulario
+        document.getElementById('cotNumero').value = cotizacion.numero_cotizacion;
+        document.getElementById('cotTitulo').value = cotizacion.titulo;
+        document.getElementById('cotCliente').value = cotizacion.cliente_id;
+        document.getElementById('cotFechaEmision').value = cotizacion.fecha_emision;
+        document.getElementById('cotDescripcion').value = cotizacion.descripcion || '';
+        
+        // Limpiar y cargar items
+        const itemsContainer = document.getElementById('itemsContainer');
+        itemsContainer.innerHTML = '';
+        
+        if (cotizacion.items && cotizacion.items.length > 0) {
+            cotizacion.items.forEach(item => {
+                agregarItemCotizacion();
+                const lastRow = itemsContainer.lastElementChild;
+                lastRow.querySelector('.item-nombre').value = item.nombre;
+                lastRow.querySelector('.item-cantidad').value = item.cantidad;
+                lastRow.querySelector('.item-precio').value = item.precio_unitario;
+                lastRow.querySelector('.item-subtotal').value = formatMoney(item.subtotal);
+            });
+        } else {
+            agregarItemCotizacion();
+        }
+        
+        // Calcular totales
+        calcularTotalesCotizacion();
+        
+        // Abrir modal
+        openModal('modalCotizacion');
+        
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al cargar datos de la cotización', 'error');
+    }
 }
 
 async function eliminarCotizacion(id) {
