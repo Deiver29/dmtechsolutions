@@ -506,8 +506,8 @@ document.querySelectorAll('section').forEach(section => {
 });
 
 // Agregar clase revealed cuando sea visible
-const style = document.createElement('style');
-style.textContent = `
+const additionalStyles = document.createElement('style');
+additionalStyles.textContent = `
     section.revealed {
         opacity: 1 !important;
         transform: translateY(0) !important;
@@ -529,7 +529,7 @@ style.textContent = `
         }
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(additionalStyles);
 
 // Console branding - Actualizado
 console.log('%c🖥️ DM TECH SOLUTIONS', 'font-size: 24px; font-weight: bold; color: #0066FF;');
@@ -539,3 +539,167 @@ console.log('%cFecha: 31 de diciembre de 2025', 'font-size: 12px; color: #5D6F80
 console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #0066FF;');
 console.log('%cOptimizado para performance y experiencia de usuario', 'font-size: 11px; color: #8E9FB0;');
 console.log('%c¿Buscas talento técnico? Contáctanos!', 'font-size: 14px; font-weight: bold; color: #00C9A7;');
+
+/* ========================================
+   SISTEMA DE LOGIN
+   ======================================== */
+
+// Referencias del DOM para el modal de login
+const btnLogin = document.getElementById('btnLogin');
+const loginModal = document.getElementById('loginModal');
+const closeModal = document.getElementById('closeModal');
+const loginForm = document.getElementById('loginForm');
+const loginMessage = document.getElementById('loginMessage');
+
+// Abrir modal de login
+if (btnLogin) {
+    btnLogin.addEventListener('click', () => {
+        loginModal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+    });
+}
+
+// Cerrar modal
+if (closeModal) {
+    closeModal.addEventListener('click', closeLoginModal);
+}
+
+// Cerrar modal al hacer clic fuera del contenido
+if (loginModal) {
+    loginModal.addEventListener('click', (e) => {
+        if (e.target === loginModal) {
+            closeLoginModal();
+        }
+    });
+}
+
+// Cerrar modal con tecla ESC
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && loginModal && loginModal.classList.contains('active')) {
+        closeLoginModal();
+    }
+});
+
+// Función para cerrar el modal
+function closeLoginModal() {
+    loginModal.classList.remove('active');
+    document.body.style.overflow = ''; // Restaurar scroll
+    
+    // Limpiar formulario y mensaje después de la animación
+    setTimeout(() => {
+        if (loginForm) loginForm.reset();
+        hideLoginMessage();
+    }, 300);
+}
+
+// Función para mostrar mensajes en el modal
+function showLoginMessage(message, type = 'error') {
+    if (loginMessage) {
+        loginMessage.textContent = message;
+        loginMessage.className = `login-message show ${type}`;
+    }
+}
+
+// Función para ocultar mensajes
+function hideLoginMessage() {
+    if (loginMessage) {
+        loginMessage.className = 'login-message';
+    }
+}
+
+// Manejar el envío del formulario de login
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Obtener valores del formulario
+        const correo = document.getElementById('correo').value.trim();
+        const password = document.getElementById('password').value;
+        
+        // Validación básica
+        if (!correo || !password) {
+            showLoginMessage('Por favor, completa todos los campos', 'error');
+            return;
+        }
+        
+        // Validar formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(correo)) {
+            showLoginMessage('Por favor, ingresa un correo válido', 'error');
+            return;
+        }
+        
+        // Deshabilitar botón y mostrar loading
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
+        
+        hideLoginMessage();
+        
+        try {
+            // Crear FormData
+            const formData = new FormData();
+            formData.append('correo', correo);
+            formData.append('password', password);
+            
+            // Enviar petición al servidor
+            const response = await fetch('login.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Verificar si la respuesta es JSON válida
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Respuesta del servidor no válida');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Login exitoso
+                showLoginMessage(result.message || '¡Inicio de sesión exitoso!', 'success');
+                
+                // Guardar datos en localStorage si "recordarme" está activado
+                const rememberMe = document.getElementById('remember').checked;
+                if (rememberMe) {
+                    localStorage.setItem('userEmail', correo);
+                } else {
+                    localStorage.removeItem('userEmail');
+                }
+                
+                // Notificación de éxito
+                showNotification('✅ ' + (result.message || '¡Bienvenido!'), 'success');
+                
+                // Redirigir al dashboard después de 1 segundo
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+                
+            } else {
+                // Error en login
+                showLoginMessage(result.message || 'Error al iniciar sesión', 'error');
+            }
+            
+        } catch (error) {
+            console.error('Error en login:', error);
+            showLoginMessage('Error de conexión. Por favor, intenta nuevamente.', 'error');
+        } finally {
+            // Restaurar botón
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+}
+
+// Al cargar la página, verificar si hay un correo guardado
+document.addEventListener('DOMContentLoaded', () => {
+    const savedEmail = localStorage.getItem('userEmail');
+    if (savedEmail) {
+        const correoInput = document.getElementById('correo');
+        const rememberCheckbox = document.getElementById('remember');
+        if (correoInput) correoInput.value = savedEmail;
+        if (rememberCheckbox) rememberCheckbox.checked = true;
+    }
+});

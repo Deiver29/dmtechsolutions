@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DM Tech Solutions</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="images/logo.jpeg" alt="DM Tech Logo" class="sidebar-logo">
+            <div class="sidebar-brand">
+                <h2>DM TECH</h2>
+                <span>Dashboard</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#clientes" class="nav-item" data-section="clientes">
+                <i class="fas fa-users"></i>
+                <span>Clientes</span>
+            </a>
+            <a href="#cotizaciones" class="nav-item" data-section="cotizaciones">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Cotizaciones</span>
+            </a>
+            <a href="#proyectos" class="nav-item" data-section="proyectos">
+                <i class="fas fa-project-diagram"></i>
+                <span>Proyectos</span>
+            </a>
+            <a href="#servicios" class="nav-item" data-section="servicios">
+                <i class="fas fa-cogs"></i>
+                <span>Servicios</span>
+            </a>
+            <a href="#reportes" class="nav-item" data-section="reportes">
+                <i class="fas fa-chart-line"></i>
+                <span>Reportes</span>
+            </a>
+            <a href="#configuracion" class="nav-item" data-section="configuracion">
+                <i class="fas fa-sliders-h"></i>
+                <span>Configuración</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="logout.php" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Cerrar Sesión</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Dashboard</h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar...">
+                </div>
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </button>
+                <div class="user-menu">
+                    <img src="https://ui-avatars.com/api/?name=Usuario&background=0066FF&color=fff" alt="Usuario" class="user-avatar">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Cargando...</span>
+                        <span class="user-role">Administrador</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="content-area">
+            <!-- Dashboard Section -->
+            <section id="section-dashboard" class="content-section active">
+                <div class="welcome-card">
+                    <div class="welcome-content">
+                        <h2>¡Bienvenido de vuelta, <span id="welcomeName">Usuario</span>!</h2>
+                        <p>Aquí tienes un resumen de tu actividad empresarial</p>
+                    </div>
+                    <div class="welcome-actions">
+                        <button class="btn btn-primary" onclick="showSection('clientes')">
+                            <i class="fas fa-plus"></i> Nuevo Cliente
+                        </button>
+                        <button class="btn btn-secondary" onclick="showSection('cotizaciones')">
+                            <i class="fas fa-file-invoice"></i> Nueva Cotización
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Clientes</span>
+                            <span class="stat-value" id="statClientes">0</span>
+                        </div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 12%
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Cotizaciones</span>
+                            <span class="stat-value" id="statCotizaciones">0</span>
+                        </div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 8%
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Proyectos Activos</span>
+                            <span class="stat-value" id="statProyectos">0</span>
+                        </div>
+                        <div class="stat-change neutral">
+                            <i class="fas fa-minus"></i> 0%
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Ingresos del Mes</span>
+                            <span class="stat-value">$0</span>
+                        </div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 15%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-clock"></i> Actividad Reciente</h3>
+                            <button class="btn-icon"><i class="fas fa-ellipsis-h"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon blue">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <p class="activity-text">Sistema listo para gestionar clientes</p>
+                                        <span class="activity-time">Hace un momento</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-tasks"></i> Tareas Pendientes</h3>
+                            <button class="btn-icon"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <div class="tasks-list">
+                                <p class="empty-state">No hay tareas pendientes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clientes Section -->
+            <section id="section-clientes" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> Gestión de Clientes</h2>
+                    <button class="btn btn-primary" id="btnNuevoCliente">
+                        <i class="fas fa-plus"></i> Nuevo Cliente
+                    </button>
+                </div>
+
+                <div class="data-card">
+                    <div class="card-header">
+                        <div class="search-filter">
+                            <input type="text" placeholder="Buscar clientes..." id="searchClientes">
+                            <select id="filterClientes">
+                                <option value="todos">Todos</option>
+                                <option value="activos">Activos</option>
+                                <option value="inactivos">Inactivos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Empresa</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientesTableBody">
+                                <tr>
+                                    <td colspan="7" class="empty-state">
+                                        <i class="fas fa-users"></i>
+                                        <p>No hay clientes registrados</p>
+                                        <button class="btn btn-primary" onclick="document.getElementById('btnNuevoCliente').click()">
+                                            Agregar Primer Cliente
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cotizaciones Section -->
+            <section id="section-cotizaciones" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-file-invoice-dollar"></i> Cotizaciones</h2>
+                    <button class="btn btn-primary" id="btnNuevaCotizacion">
+                        <i class="fas fa-plus"></i> Nueva Cotización
+                    </button>
+                </div>
+
+                <div class="data-card">
+                    <div class="card-body">
+                        <div class="empty-state">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <h3>No hay cotizaciones</h3>
+                            <p>Crea tu primera cotización para tus clientes</p>
+                            <button class="btn btn-primary" onclick="document.getElementById('btnNuevaCotizacion').click()">
+                                Crear Cotización
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Proyectos Section -->
+            <section id="section-proyectos" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-project-diagram"></i> Proyectos</h2>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nuevo Proyecto
+                    </button>
+                </div>
+
+                <div class="data-card">
+                    <div class="card-body">
+                        <div class="empty-state">
+                            <i class="fas fa-project-diagram"></i>
+                            <h3>Próximamente</h3>
+                            <p>Gestión de proyectos en desarrollo</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Servicios Section -->
+            <section id="section-servicios" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cogs"></i> Catálogo de Servicios</h2>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nuevo Servicio
+                    </button>
+                </div>
+
+                <div class="data-card">
+                    <div class="card-body">
+                        <div class="empty-state">
+                            <i class="fas fa-cogs"></i>
+                            <h3>Próximamente</h3>
+                            <p>Gestión de servicios en desarrollo</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reportes Section -->
+            <section id="section-reportes" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-line"></i> Reportes y Análisis</h2>
+                </div>
+
+                <div class="data-card">
+                    <div class="card-body">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Próximamente</h3>
+                            <p>Sistema de reportes e inteligencia de negocios</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configuración Section -->
+            <section id="section-configuracion" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-sliders-h"></i> Configuración</h2>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-user-cog"></i> Perfil</h3>
+                        <p>Actualiza tu información personal</p>
+                        <button class="btn btn-secondary">Editar Perfil</button>
+                    </div>
+                    <div class="settings-card">
+                        <h3><i class="fas fa-building"></i> Empresa</h3>
+                        <p>Configuración de la empresa</p>
+                        <button class="btn btn-secondary">Configurar</button>
+                    </div>
+                    <div class="settings-card">
+                        <h3><i class="fas fa-shield-alt"></i> Seguridad</h3>
+                        <p>Cambiar contraseña y opciones de seguridad</p>
+                        <button class="btn btn-secondary">Seguridad</button>
+                    </div>
+                    <div class="settings-card">
+                        <h3><i class="fas fa-bell"></i> Notificaciones</h3>
+                        <p>Preferencias de notificaciones</p>
+                        <button class="btn btn-secondary">Configurar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal Nuevo Cliente -->
+    <div id="modalCliente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Nuevo Cliente</h3>
+                <button class="close-modal" onclick="closeModal('modalCliente')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formCliente">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Nombre *</label>
+                            <input type="text" name="nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-building"></i> Empresa</label>
+                            <input type="text" name="empresa">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email *</label>
+                            <input type="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Teléfono *</label>
+                            <input type="tel" name="telefono" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Dirección</label>
+                        <input type="text" name="direccion">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('modalCliente')">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar Cliente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
