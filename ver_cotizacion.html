@@ -391,6 +391,7 @@
         </div>
 
         <h3 style="color: #1e293b; margin-bottom: 10px; font-size: 14px;">Concepto: <span id="cot-titulo">-</span></h3>
+        <p id="cot-descripcion" style="color: #64748b; font-size: 12px; margin-bottom: 15px; line-height: 1.6;"></p>
 
         <table class="items-table">
             <thead>
@@ -442,6 +443,7 @@
         // Obtener ID de la cotización de la URL
         const urlParams = new URLSearchParams(window.location.search);
         const cotizacionId = urlParams.get('id');
+        const modoSimple = urlParams.get('simple') === '1';
 
         if (!cotizacionId) {
             alert('ID de cotización no proporcionado');
@@ -473,6 +475,15 @@
                     document.getElementById('cot-vencimiento').textContent = formatDate(cot.fecha_vencimiento);
                     document.getElementById('cot-titulo').textContent = cot.titulo;
                     document.getElementById('validez-dias').textContent = cot.validez_dias || 30;
+                    
+                    // Mostrar descripción si existe
+                    const descripcionElement = document.getElementById('cot-descripcion');
+                    if (cot.descripcion && cot.descripcion.trim() !== '') {
+                        descripcionElement.textContent = cot.descripcion;
+                        descripcionElement.style.display = 'block';
+                    } else {
+                        descripcionElement.style.display = 'none';
+                    }
 
                     // Estado
                     const estadoBadge = getEstadoBadge(cot.estado);
@@ -501,6 +512,17 @@
                     document.getElementById('total-subtotal').textContent = formatMoney(subtotal);
                     document.getElementById('total-iva').textContent = formatMoney(iva);
                     document.getElementById('total-final').textContent = formatMoney(granTotal);
+
+                    // Si es modo simple, ocultar desglose
+                    if (modoSimple) {
+                        document.getElementById('total-gran').closest('.total-row').style.display = 'none';
+                        document.getElementById('total-subtotal').closest('.total-row').style.display = 'none';
+                        document.getElementById('total-iva').closest('.total-row').style.display = 'none';
+                        
+                        // Ocultar el párrafo informativo
+                        const infoParrafo = document.querySelector('.totals p');
+                        if (infoParrafo) infoParrafo.style.display = 'none';
+                    }
 
                 } else {
                     alert('Error: ' + data.message);

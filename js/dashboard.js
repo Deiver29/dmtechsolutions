@@ -236,7 +236,7 @@ window.showSection = showSection;
 window.editarCliente = editarCliente;
 window.eliminarCliente = eliminarCliente;
 window.verCotizacion = verCotizacion;
-window.editarCotizacion = editarCotizacion;
+window.verCotizacionSimple = verCotizacionSimple;
 window.editarCotizacion = editarCotizacion;
 window.eliminarCotizacion = eliminarCotizacion;
 
@@ -862,8 +862,11 @@ function agregarCotizacionATabla(cotizacion) {
         <td><strong>${formatMoney(cotizacion.total)}</strong></td>
         <td><span class="badge ${badgeClass}">${cotizacion.estado}</span></td>
         <td>
-            <button class="btn-icon" onclick="verCotizacion(${cotizacion.id})" title="Ver">
+            <button class="btn-icon" onclick="verCotizacion(${cotizacion.id})" title="Ver Detallada">
                 <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn-icon" onclick="verCotizacionSimple(${cotizacion.id})" title="Ver Simple (sin desglose)">
+                <i class="fas fa-file-alt"></i>
             </button>
             <button class="btn-icon" onclick="editarCotizacion(${cotizacion.id})" title="Editar">
                 <i class="fas fa-edit"></i>
@@ -889,8 +892,13 @@ function formatDate(dateString) {
 
 // Funciones placeholder para cotizaciones
 function verCotizacion(id) {
-    // Abrir la cotización en una nueva ventana para imprimir
+    // Abrir la cotización en una nueva ventana para imprimir (con desglose)
     window.open(`ver_cotizacion.html?id=${id}`, '_blank', 'width=1000,height=800');
+}
+
+function verCotizacionSimple(id) {
+    // Abrir la cotización en modo simple (sin desglose de IVA)
+    window.open(`ver_cotizacion.html?id=${id}&simple=1`, '_blank', 'width=1000,height=800');
 }
 
 async function editarCotizacion(id) {
